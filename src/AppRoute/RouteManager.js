@@ -1,7 +1,8 @@
 import React , {Component} from 'react';
 import { Route, BrowserRouter , Switch , Link} from 'react-router-dom'; 
-import App from './../App'
-import SearchBook from './../SearchBook'
+import App from './../App';
+import SearchBook from './../SearchBook';
+import * as BookApi from './../BooksAPI';
 
 class RouteManager extends Component{
     constructor(props){
@@ -9,28 +10,69 @@ class RouteManager extends Component{
         this.state = {
             currentlyReading:[],
             wantToRead:[],
-            read:[]
+            read:[],
+            isLoading :true
         }
       }
+
+    componentDidMount(){
+        BookApi.getAll().then((books)=>{
+           const arraycurrentlyReading = [];
+           const arraywantToRead = [];
+           const arrayread = [];
+
+           books.map((book)=>{
+               switch(book.shelf){
+                     case 'currentlyReading':
+                        arraycurrentlyReading.push(book);
+                        break;
+
+                    case 'wantToRead':
+                    arraywantToRead.push(book);
+                        break;
+
+                    case 'read':
+                    arrayread.push(book);
+                        break;
+                    
+                    default:
+                        break;
+               }
+               return true;
+           })
+           this.setState((prevState)=>{
+               return{
+                currentlyReading: [...prevState.currentlyReading , ...arraycurrentlyReading],
+                wantToRead:[...prevState.wantToRead , ...arraywantToRead],
+                read:[...prevState.read , ...arrayread],
+                isLoading:false
+               }
+           })
+        })
+    }
 
     addBook = (shelf , book)=>{
         switch(shelf.trim()){
             case 'currentlyReading':
-                this.setState((prevState)=>{
-                    return {
-                        currentlyReading: [...prevState.currentlyReading , book],
-                        wantToRead: prevState.wantToRead.filter((item)=>{
-                            return item.id !== book.id
-                        }),
-                        read: prevState.read.filter((item)=>{
-                            return item.id !== book.id
-                        })
-
-                    }
+                BookApi.update(book , shelf).then((res)=>{
+                    this.setState((prevState)=>{
+                        return {
+                            currentlyReading: [...prevState.currentlyReading , book],
+                            wantToRead: prevState.wantToRead.filter((item)=>{
+                                return item.id !== book.id
+                            }),
+                            read: prevState.read.filter((item)=>{
+                                return item.id !== book.id
+                            })
+    
+                        }
+                    }) 
                 })
+                
                 break;
 
             case 'wantToRead':
+            BookApi.update(book , shelf).then((res)=>{
                 this.setState((prevState)=>{
                     return {
                         wantToRead: [...prevState.wantToRead , book],
@@ -43,9 +85,12 @@ class RouteManager extends Component{
                         
                     }
                 })
+            })
+                
                 break;
 
             case 'read':
+            BookApi.update(book , shelf).then((res)=>{
                 this.setState((prevState)=>{
                     return {
                         read: [...prevState.read , book],
@@ -57,9 +102,12 @@ class RouteManager extends Component{
                         })
                     }
                 })
+            })
+                
                 break;
 
             case 'none':
+            BookApi.update(book , shelf).then((res)=>{
                 this.setState((prevState)=>{
                     return {
                         read: prevState.read.filter((item)=>{
@@ -73,9 +121,8 @@ class RouteManager extends Component{
                         })
                     }
                 })
+            })
                 break;
-            
-
             default:
             return;
 
@@ -83,7 +130,7 @@ class RouteManager extends Component{
 
     }
     render(){
-        const {currentlyReading , wantToRead ,read} = this.state;
+        const {currentlyReading , wantToRead ,read,isLoading} = this.state;
         return(
             <BrowserRouter>
                 <Switch>
@@ -94,6 +141,7 @@ class RouteManager extends Component{
                             wantToRead={wantToRead}
                             read={read}
                             AddBook={this.addBook}
+                            isLoading={isLoading}
                             />
                         )
                     }} />
