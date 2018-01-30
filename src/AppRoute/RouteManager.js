@@ -62,7 +62,7 @@ class RouteManager extends Component{
             case 'none':
                 this.setState((prevState)=>{
                     return {
-                        read: prevState.currentlyReading.filter((item)=>{
+                        read: prevState.read.filter((item)=>{
                             return item.id !== book.id
                         }),
                         currentlyReading: prevState.currentlyReading.filter((item)=>{
