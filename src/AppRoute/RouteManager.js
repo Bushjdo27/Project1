@@ -1,7 +1,7 @@
 import React , {Component} from 'react';
 import { Route, BrowserRouter , Switch , Link} from 'react-router-dom'; 
 import App from './../App';
-import SearchBook from './../SearchBook';
+import SearchBook from './../Components/SearchBook';
 import * as BookApi from './../BooksAPI';
 
 class RouteManager extends Component{

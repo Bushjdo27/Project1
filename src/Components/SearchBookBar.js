@@ -1,11 +1,12 @@
 import React , {Component} from 'react';
 import {Link} from 'react-router-dom';
-
+import _ from 'lodash';
 
 class SearchBookBar extends Component{
-
+    
     render(){
         const {query ,UpdateQuery} = this.props;
+        const realSearchTrigger = _.debounce(UpdateQuery , 500);
         return(
              <div className="search-books-bar">
                 <Link className="close-search" to="/">Close</Link>
@@ -15,7 +16,9 @@ class SearchBookBar extends Component{
                         value={query}
                         placeholder="Search by title or author"
                         onChange={(event)=>{
-                                UpdateQuery(event.target.value)
+                                console.log("run when typing on input")
+                                realSearchTrigger(event.target.value)
+                                
                             }}
                         />
 

@@ -1,8 +1,10 @@
 import React , {Component} from 'react';
-import * as BookApi from './BooksAPI';
-import SearchBookBar from './Components/SearchBookBar';
-import ListBooks from './Components/ListBooks';
-import Spinner from './Components/Spinner';
+import _ from 'lodash';
+import * as BookApi from './../BooksAPI';
+import SearchBookBar from './SearchBookBar';
+import ListBooks from './ListBooks';
+import Spinner from './Spinner';
+
 
 class Test extends Component{
 
@@ -23,6 +25,7 @@ class Test extends Component{
     }
 
     updateQuery = (query)=>{
+        console.log("run from UpdateQuery")
         if(query.trim()){
             BookApi.search(query.trim()).then((res)=>{
                 this.setState((prevState)=>{
